@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CyberLibre</title>
+  <style>
+    body {
+      margin: 0; font-family: Arial, sans-serif; background: #1a1a1a; color: white;
+    }
+    header {
+      text-align: center; padding: 20px; font-size: 2em; background: #ff0066;
+    }
+    .container {
+      padding: 20px; display: flex; gap: 20px;
+    }
+    .users, .chat {
+      background: #333; border-radius: 10px; padding: 10px;
+    }
+    .users {
+      width: 25%; height: 500px; overflow-y: auto;
+    }
+    .chat {
+      flex: 1; display: flex; flex-direction: column;
+    }
+    #messages {
+      flex: 1; overflow-y: auto; margin-bottom: 10px;
+    }
+    input, button {
+      padding: 10px; border: none; border-radius: 5px;
+    }
+    .message-input {
+      display: flex; gap: 10px;
+    }
+    .user-card {
+      background: #444; padding: 10px; border-radius: 5px; margin-bottom: 5px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .user-card img {
+      width: 30px; height: 30px; border-radius: 50%;
+    }
+    .start-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; flex-direction: column;
+      z-index: 1000;
+    }
+    select, input[type="text"] {
+      margin-bottom: 10px; width: 200px;
+    }
+    #jitsi-container {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 2000;
+    }
+  </style>
+</head>
+<body>
+
+<header>CyberLibre 🔥</header>
+
+<div class="start-screen" id="startScreen">
+  <h2>Entrez votre nom:</h2>
+  <input type="text" id="username" placeholder="Ex: Invité123"/>
+  <select id="avatar">
+    <option value="👨‍🦰">👨‍🦰</option>
+    <option value="👨‍🦱">👨‍🦱</option>
+    <option value="🧔">🧔</option>
+    <option value="🧑‍🎤">🧑‍🎤</option>
+  </select>
+  <button onclick="enterChat()">Entrer</button>
+</div>
+
+<div class="container" id="chatApp" style="display:none;">
+  <div class="users" id="userList">
+    <!-- Utilisateurs connectés -->
+  </div>
+
+  <div class="chat">
+    <div id="messages"></div>
+    <div class="message-input">
+      <input type="text" id="msgInput" placeholder="Écrire un message...">
+      <button onclick="sendMessage()">Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<div id="jitsi-container"></div>
+
+<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+<script>
+  const socket = io('https://cyber-chat.glitch.me'); // سيرفر خارجي جاهز (يمكن تغييره لسيرفرك)
+  let username = "";
+  let avatar = "";
+
+  function enterChat() {
+    username = document.getElementById('username').value || 'Invité' + Math.floor(Math.random() * 1000);
+    avatar = document.getElementById('avatar').value;
+
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('chatApp').style.display = 'flex';
+
+    socket.emit('join', { username, avatar });
+  }
+
+  function sendMessage() {
+    const msg = document.getElementById('msgInput').value;
+    if (msg.trim() === "") return;
+    socket.emit('message', msg);
+    document.getElementById('msgInput').value = "";
+  }
+
+  socket.on('userList', users => {
+    const userList = document.getElementById('userList');
+    userList.innerHTML = "";
+    users.forEach(user => {
+      if (user.username !== username) {
+        userList.innerHTML += `
+          <div class="user-card">
+            <div>${user.avatar} ${user.username}</div>
+            <button onclick="startCall('${user.username}')">📹</button>
+          </div>
+        `;
+      }
+    });
+  });
+
+  socket.on('message', data => {
+    const box = document.getElementById('messages');
+    box.innerHTML += `<div><strong>${data.avatar} ${data.username}:</strong> ${data.text}</div>`;
+    box.scrollTop = box.scrollHeight;
+  });
+
+  function startCall(targetUser) {
+    const room = `${username}-to-${targetUser}`.replace(/\s/g, "");
+    const container = document.getElementById('jitsi-container');
+    container.style.display = 'block';
+
+    const domain = "meet.jit.si";
+    const options = {
+      roomName: room,
+      parentNode: container,
+      interfaceConfigOverwrite: { DEFAULT_REMOTE_DISPLAY_NAME: "Visiteur" }
+    };
+    new JitsiMeetExternalAPI(domain, options);
+  }
+</script>
+
+<script src='https://meet.jit.si/external_api.js'></script>
+</body>
+  </html>
