@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>غرفة الدردشة</title>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#1a1a1a; color:white; }
+    header { background:#ff0066; padding:20px; text-align:center; }
+    .container { display:flex; height:calc(100vh - 120px); }
+    .users { width:25%; overflow:auto; background:#333; padding:10px; }
+    .chat { flex:1; display:flex; flex-direction:column; padding:10px; }
+    #messages { flex:1; overflow:auto; border:1px solid #444; padding:10px; }
+    .input { display:flex; margin-top:10px; }
+    .input input, .input button { padding:10px; margin-right:5px; flex:1; }
+    .ad { text-align:center; margin:10px 0; background:#444; padding:10px; border-radius:5px; position:relative;}
+    .closeAd {position:absolute;top:5px;right:10px;cursor:pointer;}
+  </style>
+</head>
+<body>
+  <header id="hdr"></header>
+  <div class="ad">
+    <span class="closeAd" onclick="this.parentNode.style.display='none'">✖</span>
+    <!-- ← الصق كود الإعلان هنا -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXX"
+         data-ad-slot="123456"
+         data-ad-format="auto"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+  </div>
+  <div class="container">
+    <div class="users" id="userList"></div>
+    <div class="chat">
+      <div id="messages"></div>
+      <div class="input">
+        <input id="msgInput" placeholder="اكتب رسالة..." />
+        <button onclick="sendMsg()">إرسال</button>
+      </div>
+    </div>
+  </div>
+  <div class="ad">
+    <span class="closeAd" onclick="this.parentNode.style.display='none'">✖</span>
+    <!-- إعلان أسفل -->
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
