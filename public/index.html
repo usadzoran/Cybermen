@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>CyberChat دخول</title>
+  <style>
+    body, html { margin:0; padding:0; font-family:Arial,sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; background:#222; color:white; }
+    .box { text-align:center; }
+    img { max-width:300px; margin-bottom:20px; }
+    input, select, button { display:block; margin:10px auto; padding:10px; width:80%; max-width:300px; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <img src="https://i.imgur.com/vVr4AXn.jpg" alt="bodybuilder + old man + money">
+    <input id="username" placeholder="اسم مستعار (أو يترك فراغ)" />
+    <select id="avatar">
+      <option value="👨‍🦰">👨‍🦰</option>
+      <option value="👨‍🦱">👨‍🦱</option>
+      <option value="🧔">🧔</option>
+      <option value="🧑‍🎤">🧑‍🎤</option>
+    </select>
+    <button onclick="enter('men')">♂️ دخول كـ رجل</button>
+    <button onclick="enter('women')">♀️ دخول كـ امرأة</button>
+  </div>
+  <script>
+    function enter(gender) {
+      let name = document.getElementById('username').value || 'Invité' + Math.floor(Math.random()*1000);
+      let avatar = document.getElementById('avatar').value;
+      window.location = `/room.html?name=${encodeURIComponent(name)}&avatar=${encodeURIComponent(avatar)}&gender=${gender}`;
+    }
+  </script>
+</body>
+</html>
